@@ -11,9 +11,10 @@ wss.on('connection', function(ws){
     ws.send(message);
   });
 
+  CLIENTS.push(ws);
 	ws.on('message', function (message) {
 		messages.push(message); //存储客户端的消息
-		CLIENTS.push(ws);
+		
 		console.log('Message Received: %s', message);
 		//以下是两种发送到所有客户端的方式
 		// wss.clients.forEach(function (conn) {
