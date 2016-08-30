@@ -1,9 +1,16 @@
 //导入nodejs自带的http模块
 var http = require("http");
+var url = require("url");
 
-function start() {
+function start(route, handle) {
 	function onRequest(request, response){
-		console.log("Request received.");
+		
+		var pathname = url.parse(request.url).pathname;
+		console.log("Request for " + pathname + " received.");
+		//console.log("Request received.");
+		
+		route(handle, pathname);
+		
 		response.writeHead(200, {"Content-Type": "text/plain"});
 		response.write("Hello World");
 		response.end();
