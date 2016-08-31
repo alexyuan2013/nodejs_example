@@ -1,4 +1,4 @@
-//µ¼Èënodejs×Ô´øµÄhttpÄ£¿é
+ï»¿//å¯¼å…¥nodejsè‡ªå¸¦çš„httpæ¨¡å—
 var http = require("http");
 var url = require("url");
 
@@ -9,11 +9,12 @@ function start(route, handle) {
 		console.log("Request for " + pathname + " received.");
 		//console.log("Request received.");
 		
-		route(handle, pathname);
+		//å°†responseå¯¹è±¡æœ€ä¸ºå‚æ•°ä¼ é€’åˆ°routeå‡½æ•°ä¸­ï¼Œè´Ÿè´£å®é™…çš„è¿”å›æ“ä½œ
+		var content = route(handle, pathname, response);
 		
-		response.writeHead(200, {"Content-Type": "text/plain"});
-		response.write("Hello World");
-		response.end();
+		//response.writeHead(200, {"Content-Type": "text/plain"});
+		//response.write(content);
+		//response.end();
 	}
 
 	http.createServer(onRequest).listen(8888);
@@ -21,5 +22,5 @@ function start(route, handle) {
 	console.log("Server has started");
 }
 
-//½«start·½·¨µ¼³öÎªÄ£¿é
+//å°†startæ–¹æ³•å¯¼å‡ºä¸ºæ¨¡å—
 exports.start = start;
