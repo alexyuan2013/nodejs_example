@@ -4,13 +4,26 @@ var url = require("url");
 
 function start(route, handle) {
 	function onRequest(request, response){
-		
+		var postData = "";
 		var pathname = url.parse(request.url).pathname;
 		console.log("Request for " + pathname + " received.");
 		//console.log("Request received.");
 		
+		request.setEncoding("utf-8");
+
+		request.addListener("data", function(postDataChunk){
+			postData += postDataChunk;
+			console.log("Received POST data chunk: '" + postDataChunk + "'.");
+		});
+
+		request.addListener("end", function(){
+			route(handle, pathname, response, postData);
+		});
+
+
+		
 		//将response对象最为参数传递到route函数中，负责实际的返回操作
-		var content = route(handle, pathname, response);
+		//var content = route(handle, pathname, response);
 		
 		//response.writeHead(200, {"Content-Type": "text/plain"});
 		//response.write(content);
