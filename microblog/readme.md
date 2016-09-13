@@ -51,6 +51,13 @@
 
 - Express 4: `$ npm start`
 
+### 工程的结构
+
+- app.js
+
+app.js是工程的入口
+
+
 
 
 
