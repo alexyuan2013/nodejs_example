@@ -1,15 +1,32 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Chat Client</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-      #chatBox{width: 100%;height: 80%; position: absolute; top: 0; overflow: scroll;}
-      #messageForm{width: 100%; height: 20%; position: absolute; bottom: 0;}
-      html body{width: 100%; height: 100%}
-    </style>
-    <script>
+
+<head>
+	<title>Chat Client</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style>
+		#chatBox {
+			width: 100%;
+			height: 80%;
+			position: absolute;
+			top: 0;
+			overflow: scroll;
+		}
+		
+		#messageForm {
+			width: 100%;
+			height: 20%;
+			position: absolute;
+			bottom: 0;
+		}
+		
+		html body {
+			width: 100%;
+			height: 100%
+		}
+	</style>
+	<script>
       var url = "ws://172.28.112.42:9087/";
       var user;
       var socket;
@@ -37,30 +54,32 @@
         socket.send(JSON.stringify(message));
         document.getElementById("message").value = "";
       }
-	  function disconnect(){
-		socket.close();
-	  }
+      function disconnect(){
+        socket.close();
+      }
       window.onload = function () {
         document.getElementById("chat").setAttribute("style", "display:none");
       }
     </script>
-  </head>
-  <body>
-    <div id="welcome">
-      <h1>WebSocket Chat</h1>
-      What is your name? 
-      <input type="text" id="name">
-      <input type="button" value="Join Chat" onclick="connectToChat();">
-    </div>
-    <div id="chat">
-      <div id="chatBox">
+</head>
 
-      </div>
-      <div id="messageForm">
-        <input type="text" id="message">
-        <input type="button" value="send" onclick="sendMessage();">
-		<input type="button" onclick="disconnect()" value="disconnect">
-      </div>
-    </div>
-  </body>
+<body>
+	<div id="welcome">
+		<h1>WebSocket Chat</h1>
+		What is your name?
+		<input type="text" id="name">
+		<input type="button" value="Join Chat" onclick="connectToChat();">
+	</div>
+	<div id="chat">
+		<div id="chatBox">
+
+		</div>
+		<div id="messageForm">
+			<input type="text" id="message">
+			<input type="button" value="send" onclick="sendMessage();">
+			<input type="button" onclick="disconnect()" value="disconnect">
+		</div>
+	</div>
+</body>
+
 </html>
