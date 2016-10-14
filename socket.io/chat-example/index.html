@@ -36,6 +36,8 @@
       //向服务端发送uuid
       socket.emit('login', {username: userId});
 
+      socket.emit('join', {username: userId});
+
       $('form').submit(function(){
         socket.emit('chat message', {username: userId, data: $('#m').val()});
         $('#m').val('');
@@ -50,6 +52,10 @@
         $('#messages').append($('<li>').text(msg.username + ': ' + msg.data));
       });
       socket.on('user disconnect', function(msg){
+        $('#messages').append($('<li>').text(msg.username + ': ' + msg.data));
+      });
+
+      socket.on('random number', function(msg){
         $('#messages').append($('<li>').text(msg.username + ': ' + msg.data));
       });
     </script>
