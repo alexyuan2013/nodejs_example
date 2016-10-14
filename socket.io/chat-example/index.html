@@ -22,14 +22,35 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
       var socket = io();
+
+      //生成uuid
+      var uuid = function(){
+        function s4() { 
+          return Math.floor((1 + Math.random()) * 0x10000) .toString(16) .substring(1); 
+        } 
+        return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+      }
+
+      var userId = uuid();
+
+      //向服务端发送uuid
+      socket.emit('login', {username: userId});
+
       $('form').submit(function(){
-        socket.emit('chat message', $('#m').val());
+        socket.emit('chat message', {username: userId, data: $('#m').val()});
         $('#m').val('');
         return false;
       });
 
       socket.on('chat message', function(msg){
-        $('#messages').append($('<li>').text(msg));
+        $('#messages').append($('<li>').text(msg.username + ': ' + msg.data));
+      });
+
+      socket.on('user login', function(msg){
+        $('#messages').append($('<li>').text(msg.username + ': ' + msg.data));
+      });
+      socket.on('user disconnect', function(msg){
+        $('#messages').append($('<li>').text(msg.username + ': ' + msg.data));
       });
     </script>
   </body>
