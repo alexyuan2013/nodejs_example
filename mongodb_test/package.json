@@ -1,0 +1,20 @@
+{
+  "name": "mongodb_test",
+  "version": "1.0.0",
+  "description": "my mongodb test application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "mongodb",
+    "nodejs"
+  ],
+  "author": "alex yuan",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.14.0",
+    "mongoose": "^4.6.5"
+  },
+  "devDependencies": {}
+}
