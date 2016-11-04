@@ -20,6 +20,7 @@
     </form>
     <script src="js/socket.io-1.4.5.js"></script>
     <script src="js/jquery-1.11.1.js"></script>
+	<script src="js/js.cookie.js"></script>
     <script>
       var socket = io();
 
@@ -31,7 +32,14 @@
         return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
       }
 
-      var userId = uuid();
+      //读写Cookies
+	  var userId = '';
+	  if(Cookies.get('userId') == undefined){
+		userId = uuid();
+		Cookies.set('userId', userId);
+	  } else {
+		userId = Cookies.get('userId');
+	  }
 
       //向服务端发送uuid
       socket.emit('login', {username: userId});
