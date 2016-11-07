@@ -65,7 +65,7 @@ io.on('connection', function(socket){
 });
 
 
-//每隔五秒向每个room发送一个随机数（证明非广播）
+//定时向每个连接发送一个随机数（证明非广播）
 setInterval(function(){
   //console.log("5s tick");
   for(var s in message.onlineUsers){
@@ -79,6 +79,20 @@ setInterval(function(){
  */
 router.get('/onlineusers', function(req, res){
   res.json(message.getOnlineUsersID());
+});
+
+/**
+ * REST接口，返回未发送消息列表
+ */
+router.get('/sendingMessages', function(req, res){
+  res.json(message.sendingMessages);
+});
+
+/**
+ * REST接口，返回已发送消息列表
+ */
+router.get('/sentMessages', function(req, res){
+  res.json(message.sentMessages);
 });
 
 

@@ -114,7 +114,7 @@ function message(){
   //获取在线用户的id
   this.getOnlineUsersID = function(){
     return Object.keys(onlineUsers);
-  }
+  };
 
 
 
