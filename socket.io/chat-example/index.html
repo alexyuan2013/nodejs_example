@@ -33,18 +33,18 @@
       }
 
       //读写Cookies
-	  var userId = '';
-	  if(Cookies.get('userId') == undefined){
-		userId = uuid();
-		Cookies.set('userId', userId);
-	  } else {
-		userId = Cookies.get('userId');
-	  }
+      var userId = '';
+      if(Cookies.get('userId') == undefined){
+      userId = uuid();
+      Cookies.set('userId', userId);
+      } else {
+      userId = Cookies.get('userId');
+      }
 
       //向服务端发送uuid
       socket.emit('login', {username: userId});
 
-      socket.emit('join', {username: userId});
+      //socket.emit('join', {username: userId});
 
       $('form').submit(function(){
         socket.emit('chat message', {username: userId, data: $('#m').val()});
@@ -52,8 +52,11 @@
         return false;
       });
 
-      socket.on('chat message', function(msg){
-        $('#messages').append($('<li>').text(msg.username + ': ' + msg.data));
+      //与监听消息推送模块服务端emit的newMessage事件
+      socket.on('newMessage', function(msg){
+        $('#messages').append($('<li>').text(msg.msgID + ': ' + msg.data));
+        //发送回执
+		    socket.emit('receipt', {userID: userId, msgID: msg.msgID});
       });
 
       socket.on('user login', function(msg){
