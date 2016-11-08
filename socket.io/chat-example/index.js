@@ -95,6 +95,20 @@ router.get('/sentMessages', function(req, res){
   res.json(message.sentMessages);
 });
 
+/**
+ * REST接口，接收要发送的消息
+ */
+router.post('/message', function(req, res){
+  var users = req.body.users;
+  var content = req.body.content;
+  if(message.sendMessageToUsers){
+    message.sendMessageToUsers(users, content);
+    res.sendStatus(200);
+  } else {
+    res.send({"error": "error info"});
+  }
+});
+
 
 
 //所有接口使用api作为url的前缀
