@@ -88,6 +88,13 @@ function message(){
       if(onlineUsers[user] != undefined){
         onlineUsers[user].emit('newMessage', {msgID: message.messageID, data: message.content})
       }
+      //连续发送100条数据后emit一个EOM事件
+      if( (i+1)%100 == 0){
+        onlineUsers[user].emit('EOM', {});
+      }
+    }
+    if(i>0){
+      onlineUsers[user].emit('EOM', {});
     }
   }
 

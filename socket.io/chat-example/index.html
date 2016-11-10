@@ -69,6 +69,9 @@
       socket.on('random number', function(msg){
         $('#messages').append($('<li>').text(msg.username + ': ' + msg.data));
       });
+      socket.on('EOM', function(msg){
+        $('#messages').append($('<li>').text('end of message'));
+      });
     </script>
   </body>
 </html>

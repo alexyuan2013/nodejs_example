@@ -28,7 +28,7 @@ function message(){
    * */
   this.sendMessageToUsers = function(users, content){
     //add message to sendingMessages
-    var messageID = Date.now() + '';
+    var messageID = Date.now();
     var usersState = {};
     for(var u in users){
       usersState[users[u]] = 0;
@@ -39,7 +39,7 @@ function message(){
       'users':usersState,
       'sentNum': 0
     };
-    redisClient.hmset('sending_messages', messageID, JSON.stringify(redisObj), redis.print);
+    redisClient.hmset('sending_messages', messageID + '', JSON.stringify(redisObj), redis.print);
     //测试用，看是否成功写入redis
     // setTimeout(function(){
     //   redisClient.hget('sending_messages', messageID, function(err, value){
@@ -74,7 +74,7 @@ function message(){
             console.log(value);
             var jsonValue = JSON.parse(value);
             if(onlineUsers[user] != undefined && jsonValue.users[user] == 0){
-              onlineUsers[user].emit('newMessage', {msgID: reply, data: jsonValue.content})
+              onlineUsers[user].emit('newMessage', {msgID: parseInt(reply), data: jsonValue.content})
             }
           }
         });
@@ -112,6 +112,38 @@ function message(){
   //获取在线用户的id
   this.getOnlineUsersID = function(){
     return Object.keys(onlineUsers);
+  };
+
+  //获取未发消息列表
+  this.getSendingMessages = function(callback){
+    redisClient.hgetall('sending_messages', function(err, value){
+      var messages = {};
+      if(err){
+        console.log(err);
+      } else {
+        //console.log(value);
+        for(var msg in value){
+          messages[msg] = JSON.parse(value[msg]);
+        }
+        callback(messages);
+      }
+    });
+  };
+
+  //获取已发消息列表
+  this.getSentMessages = function(callback){
+    redisClient.hgetall('sent_messages', function(err, value){
+      var messages = {};
+      if(err){
+        console.log(err);
+      } else {
+        //console.log(value);
+        for(var msg in value){
+          messages[msg] = JSON.parse(value[msg]);
+        }
+        callback(messages);
+      }
+    });
   };
 
 
