@@ -3,6 +3,7 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var message = require('./lib/message.js')();
+var message2 = require('./lib/message2.js')();
 var bodyParser = require('body-parser');
 
 //配置路由
@@ -26,11 +27,13 @@ io.on('connection', function(socket){
   socket.on('login', function(msg){
     console.log('user: ' + msg.username + ' login');
     message.onlineUsers[msg.username] = socket;
+    message2.onlineUsers[msg.username] = socket;
     console.log('user online: ' + Object.keys(message.onlineUsers).length);
     io.sockets.emit('user login', 
       {'username': msg.username, 'data': 'user login'});//
     //向用户发送未发消息队列
-    message.sendMessagesWhenUserLogin(msg.username);
+    //message.sendMessagesWhenUserLogin(msg.username);
+    message2.sendMessagesWhenUserLogin(msg.username);
   });
 
   //监听chat message事件
@@ -39,7 +42,8 @@ io.on('connection', function(socket){
     var users = msg.data.split(',');
     var content = 'random number: ' + Math.floor(Math.random()*1000);
     console.log('users: ' + users);
-    message.sendMessageToUsers(users, content);
+    //message.sendMessageToUsers(users, content);
+    message2.sendMessageToUsers(users, content);
   });
 
   //监听断开连接事件，删除当前socket连接
@@ -50,6 +54,7 @@ io.on('connection', function(socket){
         io.sockets.emit('user disconnect', 
           {username: s, data: 'user disconnect'});
         delete message.onlineUsers[s];
+        delete message2.onlineUsers[s];
       }
     }
     console.log('user online: ' + Object.keys(message.onlineUsers).length);
@@ -58,7 +63,8 @@ io.on('connection', function(socket){
   //监听回执receipt事件
   socket.on('receipt', function(msg){
     //收到回执，更新sendingMessages队列等
-    message.receiptMessage(msg.userID, msg.msgID);
+    //message.receiptMessage(msg.userID, msg.msgID);
+    message2.receiptMessage(msg.userID, msg.msgID);
   });
 
 
@@ -102,7 +108,8 @@ router.post('/message', function(req, res){
   var users = req.body.users;
   var content = req.body.content;
   if(message.sendMessageToUsers){
-    message.sendMessageToUsers(users, content);
+    //message.sendMessageToUsers(users, content);
+    message2.sendMessageToUsers(users, content);
     res.sendStatus(200);
   } else {
     res.send({"error": "error info"});
