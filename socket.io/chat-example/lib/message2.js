@@ -55,6 +55,7 @@ function message(){
       //用户在线
       if(onlineUsers[users[u]] != undefined){
         onlineUsers[users[u]].emit('newMessage', {msgID: messageID, data: content});
+        onlineUsers[users[u]].emit('EOM', {});
       }
     }
   };
@@ -64,6 +65,7 @@ function message(){
    * user: user_id1
    */
   this.sendMessagesWhenUserLogin = function(user){
+    var count=0;
     redisClient.hkeys('sending_messages', function(err, replies){
       console.log(replies.length + ' replies');
       replies.forEach(function(reply, i){
@@ -74,7 +76,11 @@ function message(){
             console.log(value);
             var jsonValue = JSON.parse(value);
             if(onlineUsers[user] != undefined && jsonValue.users[user] == 0){
-              onlineUsers[user].emit('newMessage', {msgID: parseInt(reply), data: jsonValue.content})
+              onlineUsers[user].emit('newMessage', {msgID: parseInt(reply), data: jsonValue.content});
+              count=count+1;
+              if((i==replies.length-1 && count>0) || count%100 == 0) {
+                onlineUsers[user].emit('EOM', {});
+              }
             }
           }
         });

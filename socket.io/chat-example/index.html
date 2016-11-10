@@ -1,7 +1,7 @@
-<!doctype html>
+﻿<!doctype html>
 <html>
   <head>
-    <title>Socket.IO chat</title>
+    <title>Nari Message Push</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { font: 13px Helvetica, Arial; }
@@ -20,7 +20,7 @@
     </form>
     <script src="js/socket.io-1.4.5.js"></script>
     <script src="js/jquery-1.11.1.js"></script>
-	<script src="js/js.cookie.js"></script>
+    <script src="js/js.cookie.js"></script>
     <script>
       var socket = io();
 
@@ -29,48 +29,51 @@
         function s4() { 
           return Math.floor((1 + Math.random()) * 0x10000) .toString(16) .substring(1); 
         } 
-        return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+        return s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4();
       }
-
-      //读写Cookies
+      //写入cookies
       var userId = '';
-      if(Cookies.get('userId') == undefined){
-      userId = uuid();
-      Cookies.set('userId', userId);
+      if(Cookies.get('userID') == undefined){
+        userId = uuid();
+        Cookies.set('userID', userId);
       } else {
-      userId = Cookies.get('userId');
+        userId = Cookies.get('userID');
       }
 
       //向服务端发送uuid
-      socket.emit('login', {username: userId});
+      socket.emit('login', {userID: userId});
 
-      //socket.emit('join', {username: userId});
+      //socket.emit('join', {userID: userId});
 
       $('form').submit(function(){
-        socket.emit('chat message', {username: userId, data: $('#m').val()});
+        socket.emit('sendMessage', {userID: userId, data: $('#m').val()});
         $('#m').val('');
         return false;
       });
 
-      //与监听消息推送模块服务端emit的newMessage事件
       socket.on('newMessage', function(msg){
         $('#messages').append($('<li>').text(msg.msgID + ': ' + msg.data));
         //发送回执
-		    socket.emit('receipt', {userID: userId, msgID: msg.msgID});
+        socket.emit('receipt', {userID: userId, msgID: msg.msgID});
       });
 
-      socket.on('user login', function(msg){
-        $('#messages').append($('<li>').text(msg.username + ': ' + msg.data));
+      socket.on('userLogin', function(msg){
+        $('#messages').append($('<li>').text(msg.userID + ': ' + msg.data));
+      });
+
+      socket.on('loginSuccess', function(msg){
+        $('#messages').append($('<li>').text(msg.userID + ': ' + msg.data));
       });
       socket.on('user disconnect', function(msg){
-        $('#messages').append($('<li>').text(msg.username + ': ' + msg.data));
+        $('#messages').append($('<li>').text(msg.userID + ': ' + msg.data));
       });
 
       socket.on('random number', function(msg){
-        $('#messages').append($('<li>').text(msg.username + ': ' + msg.data));
+        $('#messages').append($('<li>').text(msg.userID + ': ' + msg.data));
       });
+	  
       socket.on('EOM', function(msg){
-        $('#messages').append($('<li>').text('end of message'));
+      $('#messages').append($('<li>').text('end of message'));
       });
     </script>
   </body>

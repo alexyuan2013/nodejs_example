@@ -57,6 +57,7 @@ function message(){
       //用户在线
       if(onlineUsers[users[u]] != undefined){
         onlineUsers[users[u]].emit('newMessage', {msgID: messageID, data: content});
+        onlineUsers[users[u]].emit('EOM', {});
       }
     }
   };
@@ -93,7 +94,7 @@ function message(){
         onlineUsers[user].emit('EOM', {});
       }
     }
-    if(i>0){
+    if(i>0 && (i%100)!=0){
       onlineUsers[user].emit('EOM', {});
     }
   }
