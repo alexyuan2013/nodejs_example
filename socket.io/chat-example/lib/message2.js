@@ -7,7 +7,7 @@ function message(){
   //连接本地redis
   var redisClient = redis.createClient();
 
-
+  //监听redis的error事件
   redisClient.on("error", function (err) {
       console.log("Error " + err);
   });
@@ -33,12 +33,13 @@ function message(){
     for(var u in users){
       usersState[users[u]] = 0;
     }
-    //redis
+    //redis消息内容，需要转化为string
     var redisObj = {
       'content': content,
       'users':usersState,
       'sentNum': 0
     };
+    //写入到redis中
     redisClient.hmset('sending_messages', messageID + '', JSON.stringify(redisObj), redis.print);
     //测试用，看是否成功写入redis
     // setTimeout(function(){
@@ -65,15 +66,20 @@ function message(){
    * user: user_id1
    */
   this.sendMessagesWhenUserLogin = function(user){
+    //用户统计发送的条数，当数量达到100条时，发送EOM事件
     var count=0;
+    //redis中获取数据为异步过程，同时此处为一个嵌套的过程
+    //获取sending_mesages所有的keys
     redisClient.hkeys('sending_messages', function(err, replies){
       console.log(replies.length + ' replies');
+      //遍历keys，查找属于用户的message，并发送
       replies.forEach(function(reply, i){
+        //获取message信息
         redisClient.hget('sending_messages', reply, function(err, value){
           if(err){
             console.log(err);
           } else {
-            console.log(value);
+            //console.log(value);
             var jsonValue = JSON.parse(value);
             if(onlineUsers[user] != undefined && jsonValue.users[user] == 0){
               onlineUsers[user].emit('newMessage', {msgID: parseInt(reply), data: jsonValue.content});
@@ -86,7 +92,7 @@ function message(){
         });
       });
     });
-  }
+  };
 
   /**
    * 收到消息回执后的处理

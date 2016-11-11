@@ -72,6 +72,11 @@ setInterval(function(){
     message.onlineUsers[s].emit('random number', {userID: 'Server', data: num});
   }
 }, 60000);
+//定时向每个连接发送一个随机数（广播）
+// setInterval(function(){
+//   //console.log("5s tick");
+//   io.sockets.emit('ALL', {'data': 'test all'});
+// }, 6000);
 
 /**
  * REST接口，返回当前在线用户的id

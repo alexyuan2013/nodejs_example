@@ -35,7 +35,7 @@
       var userId = '';
       if(Cookies.get('userID') == undefined){
         userId = uuid();
-        Cookies.set('userID', userId);
+        Cookies.set('userID', userId, { expires: 365 }); //cookies 365天后过期
       } else {
         userId = Cookies.get('userID');
       }
@@ -73,7 +73,11 @@
       });
 	  
       socket.on('EOM', function(msg){
-      $('#messages').append($('<li>').text('end of message'));
+        $('#messages').append($('<li>').text('end of message'));
+      });
+
+      socket.on('ALL', function(msg){
+        $('#messages').append($('<li>').text('broadcast all'));
       });
     </script>
   </body>
