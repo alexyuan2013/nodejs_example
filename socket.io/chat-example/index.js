@@ -4,7 +4,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var message = require('./lib/message.js')(); //引入message模块
 var bodyParser = require('body-parser');
-
+var constants = require('./lib/constants.js');
 //配置路由
 var router = express.Router();
 
@@ -100,9 +100,17 @@ router.get('/sendingMessages', function(req, res){
 
 /**
  * REST接口，返回已发送消息列表
+ * 最多返回1000条数据
+ * 内存中数据的存放是按照key的添加顺序来的，因此倒叙取出最新的1000条
  */
 router.get('/sentMessages', function(req, res){
-  res.json(message.sentMessages);
+  var msgs = {};
+  var keys = Object.keys(message.sentMessages);
+  var count = keys.length < constants.MAX_MSG_NUM ? keys.length : constants.MAX_MSG_NUM;
+  for(var i=keys.length; i>keys.length-count; i--){
+    msgs[keys[i-1]] = message.sentMessages[keys[i-1]];
+  }
+  res.json(msgs);
 });
 
 /**

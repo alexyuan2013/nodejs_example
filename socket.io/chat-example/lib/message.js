@@ -1,4 +1,5 @@
 function message(){
+  var constants = require('./constants.js');
     /**
    * 在线用户列表
    * 示例：
@@ -90,11 +91,12 @@ function message(){
         onlineUsers[user].emit('newMessage', {msgID: message.messageID, data: message.content})
       }
       //连续发送100条数据后emit一个EOM事件
-      if( (i+1)%100 == 0){
+      if( (i+1)%constants.EOM_NUM == 0){
         onlineUsers[user].emit('EOM', {});
       }
     }
-    if(i>0 && (i%100)!=0){
+    //最后一条发送完成，且不为100的整数倍，则触发EOM
+    if(i>0 && (i%constants.EOM_NUM)!=0){
       onlineUsers[user].emit('EOM', {});
     }
   }

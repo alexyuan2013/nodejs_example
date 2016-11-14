@@ -4,6 +4,7 @@
 function message(){
   //获取redis模块
   var redis = require('redis');
+  var constants = require('./constants.js');
   //连接本地redis
   var redisClient = redis.createClient();
 
@@ -84,7 +85,7 @@ function message(){
             if(onlineUsers[user] != undefined && jsonValue.users[user] == 0){
               onlineUsers[user].emit('newMessage', {msgID: parseInt(reply), data: jsonValue.content});
               count=count+1;
-              if((i==replies.length-1 && count>0) || count%100 == 0) {
+              if((i==replies.length-1 && count>0) || count%constants.EOM_NUM == 0) {
                 onlineUsers[user].emit('EOM', {});
               }
             }
