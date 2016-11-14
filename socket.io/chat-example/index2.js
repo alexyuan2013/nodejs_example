@@ -121,6 +121,14 @@ router.post('/message', function(req, res){
   }
 });
 
+/**
+ * REST接口，向在线用户广播数据
+ */
+router.post('/broadcast', function(req, res){
+  //var d = req.body.data;
+  io.sockets.emit('ALL', req.body);
+});
+
 
 
 //所有接口使用api作为url的前缀
