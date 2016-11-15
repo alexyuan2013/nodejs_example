@@ -100,7 +100,7 @@ router.get('/sendingMessages', function(req, res){
 /**
  * REST接口，返回已发送消息列表
  * 默认最多返回1000条数据
- * redis的hash中数据是按写入的顺序倒序存的，因此取出来直接是最新发送过的1000条数据
+ * redis的hash中数据是按写入的顺序不定
  */
 router.get('/sentMessages', function(req, res){
   //定义callback函数，实际在getSentMessages()中调用
@@ -117,6 +117,30 @@ router.get('/sentMessages', function(req, res){
     res.json(msgs);
   };
   message.getSentMessages(msgCallback);
+});
+
+/**
+ * 分页返回sentMessages
+ */
+router.get('/sentMessages/pages/:id', function(req, res){
+  try {
+    var page = parseInt(req.params.id) - 1;
+    var msgCallback = function(data){
+      var msgs = {};
+      var i = 0;
+      for(var msg in data){
+        if(i>=page*constants.PAGE_MSG_NUM && i<(page+1)*constants.PAGE_MSG_NUM){ //每页返回100条数据
+          msgs[msg] = data[msg];
+        }
+        i++;
+      }
+      res.json(msgs);
+    };
+    message.getSentMessages(msgCallback);
+  } catch(err){
+    console.log(err);
+    res.sendStatus(404);
+  }
 });
 
 /**

@@ -114,6 +114,26 @@ router.get('/sentMessages', function(req, res){
 });
 
 /**
+ * 分页返回sentMessages
+ */
+router.get('/sentMessages/pages/:id', function(req, res){
+  try {
+    var page = parseInt(req.params.id) - 1;
+    var msgs = {};
+    var keys = Object.keys(message.sentMessages);
+    for(var i=keys.length-page*constants.PAGE_MSG_NUM; i>0&&i>keys.length-(page+1)*constants.PAGE_MSG_NUM; i--){
+      msgs[keys[i-1]] = message.sentMessages[keys[i-1]];
+    }
+    res.json(msgs);
+  } catch(err){
+    console.log(err);
+    res.sendStatus(404);
+  }
+});
+
+/**
+
+/**
  * REST接口，接收要发送的消息
  */
 router.post('/message', function(req, res){
