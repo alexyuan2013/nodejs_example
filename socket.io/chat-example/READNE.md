@@ -7,7 +7,7 @@
 客户端与服务端建立连接后，要触发一个`login`事件，将用户信息发送到服务端，消息体的格式暂定为：
 ```json
 {
-  userID: 'userid'
+  userID: "userid"
 }
 ```
 * `newMessage`
@@ -15,8 +15,8 @@
 服务端发送消息，客户端需要监听`newMessage`事件，消息体的格式暂定为
 ```json
 {
-  msgID: '1478488134224', //id为时间戳，单位为毫秒
-  data: 'object' //数据格式由用户定义，这里只做转发
+  msgID: "1478488134224", //id为时间戳，单位为毫秒
+  data: "object" //数据格式由用户定义，这里只做转发
 }
 ```
 * `receipt`
@@ -24,8 +24,8 @@
 客户端收到消息后，要向服务端发送回执，即`emit`一个`receipt`事件，消息体的格式暂定为：
 ```json
 {
-  userID: 'userid', //用户id
-  msgID: '1478488134224' //消息id
+  userID: "userid", //用户id
+  msgID: "1478488134224" //消息id
 }
 ```
 * `EOM`
