@@ -163,6 +163,7 @@ router.post('/message', function(req, res){
 router.post('/broadcast', function(req, res){
   //var d = req.body.data;
   io.sockets.emit('ALL', req.body);
+  res.sendStatus(200);
 });
 
 
