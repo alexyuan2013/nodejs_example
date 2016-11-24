@@ -139,6 +139,10 @@ router.get('/sentMessages/pages/:id', function(req, res){
 router.post('/message', function(req, res){
   var users = req.body.users;
   var content = req.body.content;
+  if(users == undefined || content == undefined){
+    res.send({"error":"消息格式错误"});
+    return;
+  }
   if(message.sendMessageToUsers){
     message.sendMessageToUsers(users, content);
     res.sendStatus(200);
@@ -153,6 +157,7 @@ router.post('/message', function(req, res){
 router.post('/broadcast', function(req, res){
   //var d = req.body.data;
   io.sockets.emit('ALL', req.body);
+  res.sendStatus(200);
 });
 
 //所有接口使用api作为url的前缀

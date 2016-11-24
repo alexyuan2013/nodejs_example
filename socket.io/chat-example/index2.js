@@ -149,6 +149,10 @@ router.get('/sentMessages/pages/:id', function(req, res){
 router.post('/message', function(req, res){
   var users = req.body.users;
   var content = req.body.content;
+  if(users == undefined || content == undefined){
+    res.send({"error":"消息格式错误"});
+    return;
+  }
   if(message.sendMessageToUsers){
     message.sendMessageToUsers(users, content);
     res.sendStatus(200);
