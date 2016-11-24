@@ -85,9 +85,9 @@ function message(){
             if(onlineUsers[user] != undefined && jsonValue.users[user] == 0){
               onlineUsers[user].emit('newMessage', {msgID: parseInt(reply), data: jsonValue.content});
               count=count+1;
-              if((i==replies.length-1 && count>0) || count%constants.EOM_NUM == 0) {
+            }
+            if(count>0 && (i==replies.length-1 || count%constants.EOM_NUM == 0)) {
                 onlineUsers[user].emit('EOM', {});
-              }
             }
           }
         });
