@@ -31,6 +31,13 @@ io.on('connection', function(socket){
     console.log('user online: ' + Object.keys(message.onlineUsers).length);
     io.sockets.emit('userLogin', {'userID': msg.userID, 'data': 'user login'});//
     //向用户发送未发消息队列
+    //message.sendMessagesWhenUserLogin(msg.userID);
+    socket.emit('loginSucceed',{});
+  });
+
+  //当客户端准备好后，开始发送消息
+  socket.on('beginSession', function(msg){
+    //向用户发送未发消息队列
     message.sendMessagesWhenUserLogin(msg.userID);
   });
 

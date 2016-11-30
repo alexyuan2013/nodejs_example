@@ -10,6 +10,25 @@
   "userID": "userid"
 }
 ```
+
+* `loginSucceed`
+
+服务端在login事件响应后，会emit一个loginSucceed事件到客户端，以通知客户端已经登录成功，消息体暂定为空。
+```json
+{
+
+}
+```
+
+* `beginSession`
+
+客户端在收到loginSucceed事件后，向服务端emit一个beginSession事件，表示客户端已经准备好接收消息。消息体的格式暂定为：
+```json
+{
+  "userID": "userid"
+}
+```
+
 * `newMessage`
 
 服务端发送消息，客户端需要监听`newMessage`事件，消息体的格式暂定为
