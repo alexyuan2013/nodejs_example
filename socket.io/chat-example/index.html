@@ -56,6 +56,10 @@
         //发送回执
         socket.emit('receipt', {userID: userId, msgID: msg.msgID});
       });
+      socket.on('loginSucceed', function(msg){
+        //发送回执
+        socket.emit('beginSession',  {userID: userId});
+      });
 
       socket.on('userLogin', function(msg){
         $('#messages').append($('<li>').text(msg.userID + ': ' + msg.data));

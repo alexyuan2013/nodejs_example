@@ -80,16 +80,19 @@ function message(){
           if(err){
             console.log(err);
           } else {
-            //console.log(value);
-            var jsonValue = JSON.parse(value);
-            if(onlineUsers[user] != undefined && jsonValue.users[user] == 0){
-              onlineUsers[user].emit('newMessage', {msgID: parseInt(reply), data: jsonValue.content});
-              count=count+1;
-            }
-            if(count>0 && (i==replies.length-1 || count%constants.EOM_NUM == 0)) {
-                onlineUsers[user].emit('EOM', {});
-            }
-          }
+            try{
+              var jsonValue = JSON.parse(value);
+              if(onlineUsers[user] != undefined && jsonValue.users[user] == 0){
+                onlineUsers[user].emit('newMessage', {msgID: parseInt(reply), data: jsonValue.content});
+                count=count+1;
+              }
+              if(count>0 && (i==replies.length-1 || count%constants.EOM_NUM == 0)) {
+                  onlineUsers[user].emit('EOM', {});
+              }
+            } catch(err){
+              console.log(err);
+           }
+        }
         });
       });
     });
@@ -105,19 +108,24 @@ function message(){
       if(err){
         console.log(err);
       } else {
-        var jsonValue = JSON.parse(value);
-        jsonValue.users[userID] = 1;
-        jsonValue.sentNum = jsonValue.sentNum + 1;
-        redisClient.hdel('sending_messages', msgID, redis.print);
-        //所有的人已发送，则写入sent_messages，并删除sending_messages的记录        
-        if(jsonValue.sentNum == Object.keys(jsonValue.users).length){
-          jsonValue.sentTime = Date.now();
-          redisClient.hmset('sent_messages', msgID, JSON.stringify(jsonValue), redis.print);
-        } else {
-          //更新sendingMessages队列状态
-          redisClient.hmset('sending_messages', msgID, JSON.stringify(jsonValue), redis.print);
+        try{
+          var jsonValue = JSON.parse(value);
+          if(jsonValue.users[userID]==0){//避免同一消息多次回执导致的计数错误
+            jsonValue.sentNum = jsonValue.sentNum + 1;
+          }
+          jsonValue.users[userID] = 1;    
+          redisClient.hdel('sending_messages', msgID, redis.print);
+          //所有的人已发送，则写入sent_messages，并删除sending_messages的记录        
+          if(jsonValue.sentNum == Object.keys(jsonValue.users).length){
+            jsonValue.sentTime = Date.now();
+            redisClient.hmset('sent_messages', msgID, JSON.stringify(jsonValue), redis.print);
+          } else {
+            //更新sendingMessages队列状态
+            redisClient.hmset('sending_messages', msgID, JSON.stringify(jsonValue), redis.print);
+          }    
+        } catch (err){
+          console.log(err);
         }
-        
       }      
     });
   };
@@ -158,8 +166,6 @@ function message(){
       }
     });
   };
-
-
 
   return this;
 }
