@@ -1,6 +1,6 @@
 {
   "name": "socket-chat-example",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "my first socket.io app",
   "dependencies": {
     "body-parser": "^1.15.2",
