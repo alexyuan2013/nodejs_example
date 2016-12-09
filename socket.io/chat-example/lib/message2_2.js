@@ -140,7 +140,7 @@ function message(){
 
   //获取未发消息列表
   this.getSendingMessages = function(callback){
-    var messages = {};
+    var messages = [];
     //v0.0.2读取全部数据
     redisClient.zrange('sending_messages2', 0, -1, 'withscores', function(err, replies){
       if(err){
@@ -148,15 +148,17 @@ function message(){
         return;
       }
       //console.log(replies.length + ' replies');
-      var id = "",
+      var msg = {},
           content = {};
       replies.forEach(function(reply, i){
         //onsole.log(reply);
         if(i%2 == 0){
           content = JSON.parse(reply);
         } else {
-          id = reply;
-          messages[id] = content;
+          msg.id = reply;
+          msg.content = content;
+          messages.push(msg);
+          msg = {};//new message Object
         }
         //console.log(i);
       });
@@ -166,18 +168,20 @@ function message(){
 
   //获取已发消息列表
   this.getSentMessages = function(start, stop, callback){
-    var messages = {};
+    var messages = [];
     redisClient.zrevrange('sent_messages2', start, stop, 'withscores', function(err, replies){
       console.log(replies.length + ' replies');
-      var id = "",
+      var msg = {},
           content = {};
       replies.forEach(function(reply, i){
         //console.log(reply);
         if(i%2 == 0){
           content = JSON.parse(reply);
         } else {
-          id = reply;
-          messages[id] = content;
+          msg.id = reply;
+          msg.content = content;
+          messages.push(msg);
+          msg = {}; //new message Object
         }
         //console.log(i);
       });
