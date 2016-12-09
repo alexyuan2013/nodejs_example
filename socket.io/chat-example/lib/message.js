@@ -35,6 +35,8 @@ function message(){
    */
   this.sentMessages = {};
 
+  var count = 0; //自增长的id
+
   /**
    * 发送消息到用户列表
    * users: [user_id1, user_id2]
@@ -42,7 +44,7 @@ function message(){
    * */
   this.sendMessageToUsers = function(users, content){
     //add message to sendingMessages
-    var messageID = Date.now();
+    var messageID = count++;
     var usersState = {};
     for(var u in users){
       usersState[users[u]] = 0;
