@@ -7,7 +7,7 @@ function message(){
   var constants = require('./constants.js');
   //连接本地redis
   var redisClient = redis.createClient();
-  var count = 0; //自增长的id
+  var countID = 0; //自增长的id
 
   //监听redis的error事件
   redisClient.on("error", function (err) {
@@ -30,7 +30,7 @@ function message(){
    * */
   this.sendMessageToUsers = function(users, content){
     //add message to sendingMessages
-    var messageID = count++;
+    var messageID = countID++;
     var usersState = {};
     for(var u in users){
       usersState[users[u]] = 0;
@@ -47,7 +47,7 @@ function message(){
     for(var u in users){
       //用户在线
       if(onlineUsers[users[u]] != undefined){
-        onlineUsers[users[u]].emit('newMessage', {msgID: messageID, data: content});
+        onlineUsers[users[u]].emit('newMessage', {msgID: messageID, data: content, time: Date.now()});
         onlineUsers[users[u]].emit('EOM', {});
       }
     }
@@ -77,7 +77,7 @@ function message(){
           } else {
             id = reply;
             if(onlineUsers[user] != undefined && content.users[user] == 0){
-              onlineUsers[user].emit('newMessage', {msgID: parseInt(id), data: content.content});
+              onlineUsers[user].emit('newMessage', {msgID: parseInt(id), data: content.content, time:Date.now()});
               count=count+1;
             }
           }

@@ -34,6 +34,14 @@ io.on('connection', function(socket){
     socket.emit('loginSucceed',{});
   });
 
+  //监听登出事件，删除socket连接并通知客户端
+  socket.on('logout', function(msg){
+    console.log('user: ' + msg.userID + ' logout');
+    delete message.onlineUsers[msg.userID];
+    console.log('user online: ' + Object.keys(message.onlineUsers).length);
+    socket.emit('logoutSucceed',{});
+  });
+
   //当客户端准备好后，开始发送消息
   socket.on('beginSession', function(msg){
     //向用户发送未发消息队列
@@ -113,7 +121,7 @@ router.get('/sentMessages', function(req, res){
   var msgCallback = function(data){
     res.json(data);
   };
-  message.getSentMessages(0, constants.MAX_MSG_NUM-1, msgCallback);
+  message.getSentMessages(0, constants.MAX_MSG_NUM, msgCallback);
 });
 
 /**
@@ -123,7 +131,7 @@ router.get('/sentMessages/pages/:id', function(req, res){
   try {
     var page = parseInt(req.params.id) - 1;
     var start = page*constants.PAGE_MSG_NUM;
-    var stop = (page+1)*constants.PAGE_MSG_NUM-1;
+    var stop = (page+1)*constants.PAGE_MSG_NUM;
     var msgCallback = function(data){
       res.json(data);
     };

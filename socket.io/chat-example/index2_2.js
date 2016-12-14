@@ -34,6 +34,14 @@ io.on('connection', function(socket){
     socket.emit('loginSucceed',{});
   });
 
+  //监听登出事件，删除socket连接并通知客户端
+  socket.on('logout', function(msg){
+    console.log('user: ' + msg.userID + ' logout');
+    delete message.onlineUsers[msg.userID];
+    console.log('user online: ' + Object.keys(message.onlineUsers).length);
+    socket.emit('logoutSucceed',{});
+  });
+
   //当客户端准备好后，开始发送消息
   socket.on('beginSession', function(msg){
     //向用户发送未发消息队列

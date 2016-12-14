@@ -52,7 +52,7 @@
       });
 
       socket.on('newMessage', function(msg){
-        $('#messages').append($('<li>').text(msg.msgID + ': ' + msg.data));
+        $('#messages').append($('<li>').text(msg.msgID + ': ' + msg.data + ': ' + msg.time));
         //发送回执
         socket.emit('receipt', {userID: userId, msgID: msg.msgID});
       });

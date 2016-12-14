@@ -57,7 +57,7 @@ function message(){
     for(var u in users){
       //用户在线
       if(onlineUsers[users[u]] != undefined){
-        onlineUsers[users[u]].emit('newMessage', {msgID: messageID, data: content});
+        onlineUsers[users[u]].emit('newMessage', {msgID: messageID, data: content, time: Date.now()});
         onlineUsers[users[u]].emit('EOM', {});
       }
     }
@@ -84,7 +84,7 @@ function message(){
             try{
               var jsonValue = JSON.parse(value);
               if(onlineUsers[user] != undefined && jsonValue.users[user] == 0){
-                onlineUsers[user].emit('newMessage', {msgID: parseInt(reply), data: jsonValue.content});
+                onlineUsers[user].emit('newMessage', {msgID: parseInt(reply), data: jsonValue.content, time: Date.now()});
                 count=count+1;
               }
               if(count>0 && (i==replies.length-1 || count%constants.EOM_NUM == 0)) {

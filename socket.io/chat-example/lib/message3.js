@@ -6,7 +6,7 @@ function message(){
   var MongoClient = require('mongodb').MongoClient;
   var url = 'mongodb://172.28.112.98:27017/pushdb';
   var args = process.argv.slice(2);//获取启动参数
-  var count = Date.now(); //自增长的id
+  var countID = Date.now(); //自增长的id
 
   //增、删、改操作成功后的回掉函数，关闭数据链接，debug模式下打印结果信息
   var callback = function(result, db){
@@ -79,7 +79,7 @@ function message(){
     //add message to sendingMessages
     var msgObj = {}; //mongodb中消息体
     //msgObj.msgID = Date.now();
-    msgObj.msgID = count++;
+    msgObj.msgID = countID++;
     msgObj.content = content;
     msgObj.sentNum = 0; 
     var usersObj = [];
@@ -99,7 +99,7 @@ function message(){
     for(var u in users){
       //用户在线
       if(onlineUsers[users[u]] != undefined){
-        onlineUsers[users[u]].emit('newMessage', {msgID: msgObj.msgID, data: msgObj.content});
+        onlineUsers[users[u]].emit('newMessage', {msgID: msgObj.msgID, data: msgObj.content, time: Date.now()});
         onlineUsers[users[u]].emit('EOM', {});
       }
     }
@@ -117,7 +117,7 @@ function message(){
       findDocuments(db, 'sending_messages', {users:{"$in":[{uID:user,state:0}]}}, function(docs, db){
         docs.forEach(function(doc, i){
           if(onlineUsers[user] != undefined){
-            onlineUsers[user].emit('newMessage', {msgID: doc.msgID, data: doc.content});
+            onlineUsers[user].emit('newMessage', {msgID: doc.msgID, data: doc.content, time: Date.now()});
             count=count+1;
           }
           if(count>0 && (i==docs.length-1 || count%constants.EOM_NUM == 0)) {
