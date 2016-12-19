@@ -20,6 +20,24 @@
 }
 ```
 
+* `logout`
+
+客户端与服务端断开连接（实际上连接没有断开，只是注销了用户），客户端要触发一个`logout`事件，消息体的格式暂定为：
+```json
+{
+  "userID": "userid"
+}
+```
+
+* `logoutSucceed`
+
+服务端再logout事件后，会emit一个logoutSuccedd事件到客户端，以通知客户端已经断开连接，消息体暂定为空：
+```json
+{
+  
+}
+```
+
 * `beginSession`
 
 客户端在收到loginSucceed事件后，向服务端emit一个beginSession事件，表示客户端已经准备好接收消息。消息体的格式暂定为：
