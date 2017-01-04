@@ -83,6 +83,12 @@
       socket.on('ALL', function(msg){
         $('#messages').append($('<li>').text(msg.data));
       });
+      socket.on('pong', function(msg){
+        $('#messages').append($('<li>').text('pong'));
+      });
+      socket.on('ping', function(msg){
+        $('#messages').append($('<li>').text('ping'));
+      });
     </script>
   </body>
 </html>

@@ -7,7 +7,7 @@ function message(){
   var constants = require('./constants.js');
   //连接本地redis
   var redisClient = redis.createClient();
-  var countID = 0; //自增长的id
+  var countID = Date.now(); //自增长的id
 
   //监听redis的error事件
   redisClient.on("error", function (err) {

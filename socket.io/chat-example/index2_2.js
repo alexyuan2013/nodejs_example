@@ -1,7 +1,8 @@
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var io = require('socket.io')(http,{'pingInterval': 600000, 'pingTimeout':60000});
+//var io = require('socket.io')(http);
 var message = require('./lib/message2_2.js')();
 var bodyParser = require('body-parser');
 var constants = require('./lib/constants.js');
@@ -55,6 +56,13 @@ io.on('connection', function(socket){
     var content = 'random number: ' + Math.floor(Math.random()*1000);
     console.log('users: ' + users);
     message.sendMessageToUsers(users, content);
+  });
+
+  socket.on('packet', function(msg, ping){
+    console.log(msg + ' ' + Date.now() + ' '+ ping);
+  });
+  socket.on('pong', function(msg){
+    console.log(msg + ' ' + Date.now());
   });
 
   //监听断开连接事件，删除当前socket连接
