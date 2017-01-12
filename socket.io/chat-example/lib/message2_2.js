@@ -23,12 +23,22 @@ function message(){
    */
   this.onlineUsers = {};
 
+  var init = function(){
+    redisClient.smembers('app_id', function(err, replies){
+      console.log(replies);
+      replies.forEach(function(reply) {
+        onlineUsers[reply] = {};
+      }, this);
+    });
+  };
+  init();
+
   /**
    * 发送消息到用户列表
    * users: [user_id1, user_id2]
    * content: '消息内容' 
    * */
-  this.sendMessageToUsers = function(users, content){
+  this.sendMessageToUsers = function(appID, users, content){
     //add message to sendingMessages
     var messageID = countID++;
     var usersState = {};
@@ -42,13 +52,16 @@ function message(){
       'sentNum': 0
     };
     //写入到redis中，v0.0.2版中使用sorted set存储，有序
-    redisClient.zadd('sending_messages2', messageID, JSON.stringify(redisObj), redis.print);
+    redisClient.zadd('sending_messages' + appID, messageID, JSON.stringify(redisObj), redis.print);
     //向在线用户发送
     for(var u in users){
       //用户在线
-      if(onlineUsers[users[u]] != undefined){
-        onlineUsers[users[u]].emit('newMessage', {msgID: messageID, data: content, time: Date.now()});
-        onlineUsers[users[u]].emit('EOM', {});
+      if(onlineUsers[appID] == undefined){
+        onlineUsers[appID] = {}; //初始化
+      }
+      if(onlineUsers[appID][users[u]] != undefined){
+        onlineUsers[appID][users[u]].emit('newMessage', {msgID: messageID, data: content, time: Date.now()});
+        onlineUsers[appID][users[u]].emit('EOM', {});
       }
     }
   };
@@ -57,11 +70,11 @@ function message(){
    * 发送消息列表到用户
    * user: user_id1
    */
-  this.sendMessagesWhenUserLogin = function(user){
+  this.sendMessagesWhenUserLogin = function(appID, user){
     //用户统计发送的条数，当数量达到100条时，发送EOM事件
     var count=0;
     //v0.0.2读取全部数据
-    redisClient.zrange('sending_messages2', 0, -1, 'withscores', function(err, replies){
+    redisClient.zrange('sending_messages' + appID, 0, -1, 'withscores', function(err, replies){
       if(err){
         console.log(err);
         return;
@@ -76,13 +89,13 @@ function message(){
             content = JSON.parse(reply);
           } else {
             id = reply;
-            if(onlineUsers[user] != undefined && content.users[user] == 0){
-              onlineUsers[user].emit('newMessage', {msgID: parseInt(id), data: content.content, time:Date.now()});
+            if(onlineUsers[appID][user] != undefined && content.users[user] == 0){
+              onlineUsers[appID][user].emit('newMessage', {msgID: parseInt(id), data: content.content, time:Date.now()});
               count=count+1;
             }
           }
           if(count>0 && (i==replies.length-1 || count%constants.EOM_NUM == 0)) {
-            onlineUsers[user].emit('EOM', {});
+            onlineUsers[appID][user].emit('EOM', {});
           }
           //console.log(i);
         } catch (err){
@@ -97,8 +110,8 @@ function message(){
    * userID: user_id1
    * msgID: message_id1
    */
-  this.receiptMessage = function(userID, msgID){
-    redisClient.ZRANGEBYSCORE('sending_messages2', msgID, msgID, function(err, replies){
+  this.receiptMessage = function(appID, userID, msgID){
+    redisClient.ZRANGEBYSCORE('sending_messages' + appID, msgID, msgID, function(err, replies){
       if(err){
         console.log(err);
         return;
@@ -114,16 +127,16 @@ function message(){
           jsonValue.users[userID] = 1;
           //jsonValue.sentNum = jsonValue.sentNum + 1;
           //删除原来的一条
-          redisClient.ZREM('sending_messages2', reply, function(err, reply){
+          redisClient.ZREM('sending_messages' + appID, reply, function(err, reply){
             console.log(reply + ' removed');
           });
           //所有的人已发送，则写入sent_messages，并删除sending_messages的记录        
           if(jsonValue.sentNum == Object.keys(jsonValue.users).length){
             jsonValue.sentTime = Date.now();
-            redisClient.zadd('sent_messages2', msgID, JSON.stringify(jsonValue), redis.print);
+            redisClient.zadd('sent_messages' + appID, msgID, JSON.stringify(jsonValue), redis.print);
           } else {
             //更新sendingMessages队列状态
-            redisClient.zadd('sending_messages2', msgID, JSON.stringify(jsonValue), redis.print);
+            redisClient.zadd('sending_messages' + appID, msgID, JSON.stringify(jsonValue), redis.print);
           }
           //console.log(i);
         } catch (err){
@@ -133,16 +146,40 @@ function message(){
     });
   };
 
+  //添加app
+  this.addAppID = function(appID){
+    redisClient.sadd('app_id', appID, function(err, reply){
+      if(err){
+        console.log(err);
+        return;
+      }
+      if(reply>0){
+        onlineUsers[appID] = {}; 
+      }
+    });
+  };
+
+  //获取所有使用推送功能的appid
+  this.getAppID = function(callback){
+    var apps = [];
+    redisClient.smembers('app_id', function(err, replies){
+      console.log(replies);
+      return callback(replies);
+    });
+    //return Object.keys(onlineUsers);
+  };
+
   //获取在线用户的id
-  this.getOnlineUsersID = function(){
-    return Object.keys(onlineUsers);
+  this.getOnlineUsersID = function(appid){
+    //检查appid是否已经有用户连接过，否则Object.keys会报错
+    return onlineUsers[appid] ? Object.keys(onlineUsers[appid]) : null;
   };
 
   //获取未发消息列表
-  this.getSendingMessages = function(callback){
+  this.getSendingMessages = function(appID, callback){
     var messages = [];
     //v0.0.2读取全部数据
-    redisClient.zrange('sending_messages2', 0, -1, 'withscores', function(err, replies){
+    redisClient.zrange('sending_messages' + appID, 0, -1, 'withscores', function(err, replies){
       if(err){
         console.log(err);
         return;
@@ -167,9 +204,9 @@ function message(){
   };
 
   //获取已发消息列表
-  this.getSentMessages = function(start, stop, callback){
+  this.getSentMessages = function(appID, start, stop, callback){
     var messages = [];
-    redisClient.zrevrange('sent_messages2', start, stop, 'withscores', function(err, replies){
+    redisClient.zrevrange('sent_messages' + appID, start, stop, 'withscores', function(err, replies){
       console.log(replies.length + ' replies');
       var msg = {},
           content = {};
