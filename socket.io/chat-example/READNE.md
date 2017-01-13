@@ -1,12 +1,13 @@
 # 消息推送的试验模块
 
-### 1. 内部接口
+## 1. 内部接口
 
 * `login`
 
 客户端与服务端建立连接后，要触发一个`login`事件，将用户信息发送到服务端，消息体的格式暂定为：
 ```json
 {
+  "appID": "ipark",
   "userID": "userid"
 }
 ```
@@ -25,6 +26,7 @@
 客户端与服务端断开连接（实际上连接没有断开，只是注销了用户），客户端要触发一个`logout`事件，消息体的格式暂定为：
 ```json
 {
+  "appID": "ipark",
   "userID": "userid"
 }
 ```
@@ -43,6 +45,7 @@
 客户端在收到loginSucceed事件后，向服务端emit一个beginSession事件，表示客户端已经准备好接收消息。消息体的格式暂定为：
 ```json
 {
+  "appID": "ipark",
   "userID": "userid"
 }
 ```
@@ -52,6 +55,7 @@
 服务端发送消息，客户端需要监听`newMessage`事件，消息体的格式暂定为
 ```json
 {
+  "appID": "ipark",
   "msgID": "1478488134224", //id为时间戳，单位为毫秒
   "data": "object" //数据格式由用户定义，这里只做转发
 }
@@ -61,6 +65,7 @@
 客户端收到消息后，要向服务端发送回执，即`emit`一个`receipt`事件，消息体的格式暂定为：
 ```json
 {
+  "appID": "ipark",
   "userID": "userid", //用户id
   "msgID": "1478488134224" //消息id
 }
@@ -83,10 +88,44 @@
 }
 ```
 
-### 2. 外部接口（REST接口）
+## 2. 外部接口（REST接口）
 
-* 获取在线用户
-  * url: http://172.28.112.42:3000/api/onlineUsers
+* 获取使用推送的应用id
+  * url: http://172.28.112.42:3000/api/apps
+  * 方法：get
+  * 参数：无
+  * 返回：
+  ```json
+  [
+    "ipark",
+    "ipark2"
+  ]
+  ```
+* 添加应用
+  * url：http://172.28.112.42:3000/api/add_app
+  * 方法：post
+  * 参数：
+  ```json
+  {
+    "appID": "ipark2"
+  }
+  ```
+  * 返回：
+  ```json
+  //正常返回状态码：200
+  //出错时返回
+  {
+    "error": "error info"
+  }
+  ```
+
+
+* 获取某个应用的在线用户
+  * url: http://172.28.112.42:3000/api/onlineUsers/:appid
+  ```
+  示例：获取ipark的在线用户
+  http://172.28.112.42:3000/api/onlineUsers/ipark
+  ```
   * 方法：get
   * 参数：无
   * 返回：
@@ -97,8 +136,12 @@
   ]
   ```
 
-* 向用户发送消息
-  * url: http://172.28.112.42:3000/api/message
+* 向某个应用的用户发送消息
+  * url: http://172.28.112.42:3000/api/message/:appid
+  ```
+  示例：向ipark的用户发送消息
+  http://172.28.112.42:3000/api/message/ipark
+  ```
   * 方法：post
   * 参数：
   ```json
@@ -115,8 +158,12 @@
     "error": "error info"
   }
   ```
-* 向在线用户广播数据
-   * url: http://172.28.112.42:3000/api/broadcast
+* 向某个应用的在线用户广播数据
+   * url: http://172.28.112.42:3000/api/broadcast/:appid
+   ```
+   示例：向ipark的在线用户广播
+   http://172.28.112.42:3000/api/broadcast/ipark
+   ```
    * 方法：post
    * 参数：
    ```json
@@ -128,8 +175,12 @@
    ```json
    状态码：200 或其他
    ```
-* 返回未发送消息列表
-  * url: http://172.28.112.42:3000/api/sendingMessages
+* 返回某个应用的未发送消息列表
+  * url: http://172.28.112.42:3000/api/sendingMessages/:appid
+  ```
+  示例：获取ipark的未发送消息列表
+  http://172.28.112.42:3000/api/sendingMessages/ipark
+  ```
   * 方法：get
   * 参数：无
   * 返回：
@@ -153,8 +204,12 @@
     }
   }
   ```
-* 返回已发送消息列表（最多1000条）
-  * url: http://172.28.112.42:3000/api/sentMessages
+* 返回某个应用已发送消息列表（最多1000条）
+  * url: http://172.28.112.42:3000/api/sentMessages/:appid
+  ```
+  示例：获取ipark的发送消息列表，不分页
+  http://172.28.112.42:3000/api/sentMessages/ipark
+  ```
   * 方法：get
   * 参数：无
   * 返回：
@@ -179,7 +234,11 @@
   }
   ``` 
 * 返回已发送消息列表——分页返回（每页100条）
-  * url: http://172.28.112.42:3000/api/sentMessages/pages/1（返回第一页）
+  * url: http://172.28.112.42:3000/api/sentMessages/:appid/pages/1（返回第一页）
+  ```
+  示例：获取ipark已发送消息列表的第一页
+  http://172.28.112.42:3000/api/sentMessages/ipark/pages/1
+  ```
   * 方法：get
   * 参数：无
   * 返回：
