@@ -77,7 +77,7 @@ io.on('connection', function(socket){
       for(var s in message.onlineUsers[appID]){
         if(message.onlineUsers[appID][s] === socket){
           console.log('user:' + s + ' disconnect');
-          io.sockets.emit('user disconnect', {userID: s, data: 'user disconnect'});
+          io.to(appID).emit('user disconnect', {userID: s, data: 'user disconnect'});
           delete message.onlineUsers[appID][s];
           console.log('user online: ' + Object.keys(message.onlineUsers[appID]).length);
           findFlag = 1
