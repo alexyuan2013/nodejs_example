@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
+//设置ping/pong的间隔，超时时间
 var io = require('socket.io')(http,{'pingInterval': 600000, 'pingTimeout':60000});
 //var io = require('socket.io')(http);
 var message = require('./lib/message2_2.js')();
@@ -15,11 +16,11 @@ app.use(express.static('public'));
 //配置解析json
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-
+//默认访问index页面
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html')
 });
-
+//socket.io监听事件
 io.on('connection', function(socket){
   
   //console.log('a user connected');
@@ -63,12 +64,6 @@ io.on('connection', function(socket){
     message.sendMessageToUsers(msg.appID, users, content);
   });
 
-  socket.on('packet', function(msg, ping){
-    console.log(msg + ' ' + Date.now() + ' '+ ping);
-  });
-  socket.on('pong', function(msg){
-    console.log(msg + ' ' + Date.now());
-  });
 
   //监听断开连接事件，删除当前socket连接
   socket.on('disconnect', function(){
@@ -80,11 +75,11 @@ io.on('connection', function(socket){
           io.to(appID).emit('user disconnect', {userID: s, data: 'user disconnect'});
           delete message.onlineUsers[appID][s];
           console.log('user online: ' + Object.keys(message.onlineUsers[appID]).length);
-          findFlag = 1
+          findFlag = 1;
           break;
         }
       }
-      if(findFlag ==1){
+      if(findFlag == 1){
         break;
       }    
     }     

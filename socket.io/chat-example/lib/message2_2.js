@@ -23,6 +23,11 @@ function message(){
    */
   this.onlineUsers = {};
 
+  /**
+   * 初始化每个app的online user对象
+   * app_id存储在redis的Sets中，初始化的过程中将所有的app_id取出，然后初始化
+   * 此外，在新增一个app_id后也会做一次初始化，这样保证在使用online user对象时的操作安全
+   */
   var init = function(){
     redisClient.smembers('app_id', function(err, replies){
       console.log(replies);
