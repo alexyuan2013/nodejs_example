@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html ng-app="npush">
+
+<head>
+  <script src="js/push-ui/angular.js"></script>
+  <script src="js/push-ui/ui-bootstrap-tpls-2.5.0.js"></script>
+  <script src="js/push-ui/npush.js"></script>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="container">
+  <div class="page-header">
+    <h4>推送管理</h4>
+  </div>
+  <div ng-controller="NPushController">
+    <div>
+      <uib-tabset active="active">
+        <uib-tab index="0" heading="在线用户">
+          <table class="table table-striped">
+            <tbody ng-model="users">
+              <tr ng-repeat="user in users track by $index">
+                <td>{{$index + 1 }}</td>
+                <td>{{user}}</td>
+              </tr>
+              <tr>
+                <td colspan="2">当前在线用户数：{{users.length}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </uib-tab>
+        <uib-tab index="1" heading="待发消息">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <td>消息编号</td>
+                <td>消息内容</td>
+              </tr>
+            </thead>
+            <tbody ng-model="sendingMessages">
+              <tr ng-repeat="msg in sendingMessages">
+                <td>{{msg.id}}</td>
+                <td>{{msg.content}}</td>
+              </tr>
+              <tr>
+                <td colspan="2">当前待发送消息条数：{{sendingMessages.length}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </uib-tab>
+        <uib-tab index="2" heading="已发消息">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <td>消息编号</td>
+                <td>消息内容</td>
+              </tr>
+            </thead>
+            <tbody ng-model="sentMessages">
+              <tr ng-repeat="msg in sentMessages">
+                <td>{{msg.id}}</td>
+                <td>{{msg.content}}</td>
+              </tr>
+              <tr>
+                <td colspan="2">当前已发送消息条数：{{sentMessages.length}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </uib-tab>
+      </uib-tabset>
+    </div>
+    <hr />
+    <div>
+      <form ng-submit="submit()">
+        <div class="form-group">
+          <label>消息内容</label>
+          <textarea ng-model="msgContent" class="form-control" rows="3" placeholder="请输入JSON格式消息内容"></textarea>
+        </div>
+        <div class="form-group">
+          <label>用户列表</label>
+          <textarea ng-model="msgUsers" class="form-control" rows="5" placeholder="请输入用户id，以;隔开"></textarea>
+        </div>
+        <button type="submit" id="submit" class="btn btn-default">提交</button>
+      </form>
+    </div>
+  </div>
+</body>
+
+</html>
