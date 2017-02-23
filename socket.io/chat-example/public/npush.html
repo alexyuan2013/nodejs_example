@@ -15,10 +15,10 @@
   <div ng-controller="NPushController">
     <div>
       <uib-tabset active="active">
-        <uib-tab index="0" heading="在线用户">
+        <uib-tab index="0" heading="在线用户" select="selectPage1()">
           <table class="table table-striped">
             <tbody ng-model="users">
-              <tr ng-repeat="user in users track by $index">
+              <tr ng-repeat="user in pageUsers track by $index">
                 <td>{{$index + 1 }}</td>
                 <td>{{user}}</td>
               </tr>
@@ -27,8 +27,9 @@
               </tr>
             </tbody>
           </table>
+          <ul uib-pager total-items="users.length" ng-model="page1.index"></ul>
         </uib-tab>
-        <uib-tab index="1" heading="待发消息">
+        <uib-tab index="1" heading="待发消息" select="selectPage2()">
           <table class="table table-striped">
             <thead>
               <tr>
@@ -37,7 +38,7 @@
               </tr>
             </thead>
             <tbody ng-model="sendingMessages">
-              <tr ng-repeat="msg in sendingMessages">
+              <tr ng-repeat="msg in sendingMsgs">
                 <td>{{msg.id}}</td>
                 <td>{{msg.content}}</td>
               </tr>
@@ -46,8 +47,9 @@
               </tr>
             </tbody>
           </table>
+          <ul uib-pager total-items="sendingMessages.length" ng-model="page2.index"></ul> 
         </uib-tab>
-        <uib-tab index="2" heading="已发消息">
+        <uib-tab index="2" heading="已发消息" select="selectPage3()">
           <table class="table table-striped">
             <thead>
               <tr>
@@ -56,7 +58,7 @@
               </tr>
             </thead>
             <tbody ng-model="sentMessages">
-              <tr ng-repeat="msg in sentMessages">
+              <tr ng-repeat="msg in sentMsgs">
                 <td>{{msg.id}}</td>
                 <td>{{msg.content}}</td>
               </tr>
@@ -65,6 +67,7 @@
               </tr>
             </tbody>
           </table>
+          <ul uib-pager total-items="sentMessages.length" ng-model="page3.index"></ul>         
         </uib-tab>
       </uib-tabset>
     </div>
@@ -77,7 +80,7 @@
         </div>
         <div class="form-group">
           <label>用户列表</label>
-          <textarea ng-model="msgUsers" class="form-control" rows="5" placeholder="请输入用户id，以;隔开"></textarea>
+          <textarea ng-model="msgUsers" class="form-control" rows="5" placeholder="请输入用户id，以 ; 隔开"></textarea>
         </div>
         <button type="submit" id="submit" class="btn btn-default">提交</button>
       </form>
