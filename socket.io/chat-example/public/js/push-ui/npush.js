@@ -48,7 +48,7 @@ angular.module('npush', ['ui.bootstrap'])
     console.log(newValue);
     if(newValue){
       $scope.page2.start = $scope.page2.size * (newValue - 1);
-      $scope.sendingmsgs = $scope.sendingMessages.slice($scope.page2.start, $scope.page2.start + $scope.page2.size);
+      $scope.sendingMsgs = $scope.sendingMessages.slice($scope.page2.start, $scope.page2.start + $scope.page2.size);
     }
   });
 
