@@ -1,0 +1,14 @@
+{
+  "name": "chp05",
+  "version": "1.0.0",
+  "description": "",
+  "main": "exp5-1.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "alex",
+  "license": "ISC",
+  "dependencies": {
+    "mime": "^1.3.6"
+  }
+}
