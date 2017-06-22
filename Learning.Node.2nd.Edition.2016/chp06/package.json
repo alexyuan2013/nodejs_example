@@ -1,0 +1,14 @@
+{
+  "name": "chp06",
+  "version": "1.0.0",
+  "description": "",
+  "main": "exp6-1.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "alex",
+  "license": "ISC",
+  "dependencies": {
+    "stat-mode": "^0.2.2"
+  }
+}
